@@ -1,4 +1,4 @@
 # Data-plotter
 Plot data from tiff and shape files
 
-by Liza Adriana
+by Liza Adriana Tapia
