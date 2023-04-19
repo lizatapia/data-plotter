@@ -14,7 +14,7 @@ import rasterio.plot
 import contextily as ctx
 
 # DEFINE COASTLINE FILE
-coast_path = '/usuaris/tapia/gloria/ccaav2.shp' # THIS ONE IS INSIDE THE FOLDER (PATH?)
+coast_path = 'path/ccaav2.shp' # new path
 sf = shapefile.Reader(coast_path)
 
 # CREATE LIST OF FILES TO EXTRACT
@@ -23,9 +23,7 @@ def get_list_files(in_date, end_date):
     dt_i = in_date
 
     while dt_i < end_date:
-        #path = "/usuaris/tapia/ac1c_plot/19jan2020/acc01h_" + dt_i.strftime("%Y%m%d") + dt_i.strftime("%H%M") + ".tif" THIS PATH IS NO LONGER USEFUL
-        #path = "/var/dades/realtime/smc/AC1C/" + dt_i.strftime("%Y%m%d") + "/" + dt_i.strftime("%H%M") + "/CMPAC*.tiff" CORRECT!
-        #path = "/var/dades/work/ICGC/2021reconstruccio/events/20200119-20200124/config3/combi/tif" COMPLETE NAME
+        path = "path/acc01h_" + dt_i.strftime("%Y%m%d") + dt_i.strftime("%H%M") + ".tif" # path
         dt_path = glob.glob(path)  # only use if you have a star
         list_files.extend(dt_path)  # to make a list of paths
         dt_i = dt_i + datetime.timedelta(hours = 1)
@@ -59,8 +57,8 @@ def plot_tiff(path,title):
     src_data = src.read(1)
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    ax.set_xlim([250000, 550000])
-    ax.set_ylim([4450000, 4770000])
+    ax.set_xlim([245000, 545000])
+    ax.set_ylim([4470000, 4770000])
 
     for axis in [ax.xaxis, ax.yaxis]:
         formatter = ScalarFormatter()
@@ -95,7 +93,7 @@ def plot_tiff(path,title):
     cbar.set_ticklabels([0., .1, .3, .6, 1., 2., 3., 4., 5., 6., 8., 10., 13., 16., 20., 25., 35., 50.], fontsize = 12)
 
     plt.tight_layout()
-    #plt.savefig('/usuaris/tapia/' + title + '_1.png') UPDATE PATH
+    #plt.savefig('path' + title + '.png') # path
     plt.show()
     return
 
@@ -103,8 +101,8 @@ def plot_tiff(path,title):
 # MAIN FUNCTION TO RUN
 if __name__ == '__main__':
 
-    in_date = datetime.datetime(2020, 1, 19, 0, 0)
-    end_date = datetime.datetime(2020, 1, 20, 1, 0)
+    in_date = datetime.datetime(2020, 1, 23, 10, 0)
+    end_date = datetime.datetime(2020, 1, 24, 0, 0)
 
     list_files = get_list_files(in_date, end_date)
     list_dates = get_list_dates(in_date, end_date)
