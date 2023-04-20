@@ -9,7 +9,7 @@ from matplotlib.lines import Line2D
 
 # INITIATION
 frequency = "1D" # "1H"
-width = pd.Timedelta(days=1) # research about using hours here
+width = pd.Timedelta(days=1)
 date_in = datetime.datetime(2020, 1, 10, 0, 0)
 date_end = datetime.datetime(2020, 1, 27, 0, 0)
 number_days = date_end - date_in + pd.Timedelta(days=1)
@@ -90,7 +90,7 @@ ax[1].axhline(y = threshold_wl+0.05, linewidth = 0.9, linestyle = '-.', color = 
 ax[1].spines[["right", "bottom"]].set_visible(False)
 
 plt.autoscale()
-#plt.savefig('/var/dades/research/tapia/outputs/performance/timeline_' + name_time + '.png', bbox_inches='tight', bbox_extra_artists = (name_date,), dpi=600)
+#plt.savefig('path..._' + name_time + '.png', bbox_inches='tight', bbox_extra_artists = (name_date,), dpi=600)
 plt.show()
 
 # DURATION-MATRIX
@@ -207,7 +207,7 @@ ax[1].legend(handles=handles_2, labels = labels_2, fontsize=9, loc="upper center
 ax[1].spines[["left", "top"]].set_visible(False)
 
 plt.tight_layout()
-#plt.savefig('/var/dades/research/tapia/outputs/performance/bar_' + name_bar + '.png', dpi=500)
+#plt.savefig('path..._' + name_bar + '.png', dpi=500)
 plt.show()
 
 # BOTH GRAPHS (SUCCESS AND ERROR)
@@ -276,5 +276,5 @@ ax[1].axvline(x = 0, ymin=-1, ymax=1, linewidth = 0.5, linestyle = '-', color = 
 ax[1].spines[["left", "top", "right", "bottom"]].set_visible(False)
 
 plt.tight_layout(pad = 2)
-#plt.savefig('/var/dades/research/tapia/outputs/performance/star_' + name_star + '.png', dpi=500)
+#plt.savefig('path..._' + name_star + '.png', dpi=500)
 plt.show()
