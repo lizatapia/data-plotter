@@ -11,11 +11,9 @@ from descartes import PolygonPatch
 from matplotlib.lines import Line2D
 
 # PLOT RESULTS SAVED WITH ACCUM_WL AND INVENTORY
-in_date = datetime.datetime(2020, 1, 20)
-#sf_sb = shapefile.Reader('/var/dades/research/tapia/outputs/wl_sb_plot/wlcomb_'+ in_date.strftime("%Y%m%d") + '.shp')
-#sf_inv = shapefile.Reader('/var/dades/research/tapia/outputs/landslide_event/inv_4day.shp')
-sf_sb = shapefile.Reader('/var/dades/research/tapia/outputs/wl_sb_plot/wlcomb_event.shp')
-sf_inv = shapefile.Reader('/var/dades/research/tapia/outputs/landslide_event/inv_20tofeb.shp') # inv_20to23
+in_date = datetime.datetime(2020, 1, 21)
+sf_sb = shapefile.Reader('/var/dades/research/tapia/outputs/wl_sb_plot/wlcomb_'+ in_date.strftime("%Y%m%d") + '.shp') # HERE THE WL_COMB
+sf_inv = shapefile.Reader('/var/dades/research/tapia/outputs/landslide_event/inv_1day.shp') # HERE THE INVENTARY
 
 fig = plt.figure(figsize = (10, 10))
 ax = fig.gca()
@@ -63,34 +61,21 @@ for inventory in sf_inv.shapeRecords():
     ax.plot(x, y, markersize=markersize_1, color=color_1, marker='o', mec = 'black')
 
 # IDENTIFY THE CRS USED
-src = rasterio.open("/var/dades/research/tapia/lews/warnings/20200120/wl202001200100.tif")
+src = rasterio.open("/var/dades/research/tapia/lews/warnings/20200121/wl202001210100.tif")
 src_data = src.read(1)
 ctx.add_basemap(ax, crs = src.crs, source = ctx.providers.CartoDB.Positron, zoom = 8, alpha = 1)
 
 plt.xlabel('x-UTM [km]', fontsize = 15)
 plt.ylabel('y-UTM [km]', fontsize = 15)
-#plt.title("Landslide Warnings and reported Landslide Events\nfor " + datetime.datetime.strftime(in_date,'%Y-%m-%d'), fontsize = 23, pad = 10)
-plt.title("Landslide Warnings and reported Landslide Events\nfrom " + datetime.datetime.strftime(in_date,'%Y-%m-%d') + " until 2020-02-11", fontsize = 23, pad = 10)
-
+plt.title("Landslide Warnings and reported Landslide Events\nfor " + datetime.datetime.strftime(in_date,'%Y-%m-%d'), fontsize = 23, pad = 10)
 det_wl = Line2D([0], [0], color='red', marker='s', mec = '#CDCFCB', markersize=7, lw=0)
 no_det_wl = Line2D([0], [0], color='#FFEFD5', marker='s', mec = '#CDCFCB', markersize=7, lw=0)
 inv_point = Line2D([0], [0], color = '#8B1A1A', marker = 'o', markersize = 6, mec = 'black', lw = 0)
 
-# GENERAL FORM
-#handles = [det_wl, no_det_wl, inv_point]
-#labels = ["Sub-basin with landslide warning", "Sub-basin without landslide warning", "Reported landslide events"]
-#plt.legend(handles=handles, labels = labels, fontsize=12, loc="lower right")
-# SPECIAL CASE
-extra_point = Line2D([0], [0], color = 'yellow', marker = 'o', markersize = 7, mec = 'black', lw = 0)
-handles_wl = [det_wl, no_det_wl]
-handles_point = [inv_point, extra_point]
-labels_wl = ["Sub-basin with landslide warning", "Sub-basin without landslide warning"]
-labels_point = ["Reported landslide events", "Reported landslide events after 2020-01-23"]
-legend_wl = plt.legend(handles=handles_wl, labels = labels_wl, fontsize=12, loc="lower left", bbox_to_anchor = (0.55, 0.10), title = 'Warning Levels', title_fontsize = 14)
-plt.gca().add_artist(legend_wl)
-plt.legend(handles=handles_point, labels = labels_point, fontsize=12, loc="lower right", title = 'Landslide Inventory', title_fontsize = 14)
+handles = [det_wl, no_det_wl, inv_point]
+labels = ["Sub-basin with landslide warning", "Sub-basin without landslide warning", "Reported landslide events"]
+plt.legend(handles=handles, labels = labels, fontsize=12, loc="lower right")
 
 plt.tight_layout()
-#plt.savefig('/var/dades/research/tapia/outputs/landslide_event/comp_sb_' + datetime.datetime.strftime(in_date,'%Y-%m-%d') + '.png')
-plt.savefig('/var/dades/research/tapia/outputs/landslide_event/comp_sb_20tofeb.png') # comparison_20to23
+plt.savefig('/var/dades/research/tapia/outputs/landslide_event/comp_sb_' + datetime.datetime.strftime(in_date,'%Y-%m-%d') + '.png')
 plt.show()
