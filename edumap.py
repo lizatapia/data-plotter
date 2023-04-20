@@ -146,15 +146,15 @@ r_value = r_value + dur_matrix[4,0] # additional value
 print("Grade of Correctness Criterion\nG = " + str(g_value) + "\nY = " + str(y_value) + "\nO = " + str(o_value) + "\nR = " + str(r_value))
 
 # CALCULATE PERFORMANCE INDICATORS
-I_eff = (TN + TP) / (float(number_days.days) - dur_matrix[0,0]) # exclude when no-no situation
-HR_L = TP / (TP + FN)
-PP_W = TP / (TP + FP)
-TS = TP / (TP + FN + FP)
-OR = (TP + TN) / (FN + FP)
-MR = 1 - I_eff
-RMA = 1 - HR_L
-RFA = 1 - PP_W
-ER = (o_value + r_value) / (float(number_days.days) - dur_matrix[0,0]) # exclude when no-no situation
+I_eff = round((TN + TP) / (float(number_days.days) - dur_matrix[0,0]),3) # exclude when no-no situation
+HR_L = round(TP / (TP + FN), 3)
+PP_W = round(TP / (TP + FP), 3)
+TS = round(TP / (TP + FN + FP), 3)
+OR = round((TP + TN) / (FN + FP), 3)
+MR = round(1 - I_eff, 3)
+RMA = round(1 - HR_L, 3)
+RFA = round(1 - PP_W, 3)
+ER = round((o_value + r_value) / (float(number_days.days) - dur_matrix[0,0]), 3) # exclude when no-no situation
 print("Performance Indicators\nIeff = " + str(I_eff) + "\nHR_L = " + str(HR_L) + "\nPP_W = " + str(PP_W) + "\nTS = " + str(TS)
       + "\nOR = " + str(OR) + "\nMR = " + str(MR) +"\nRMW = " + str(RMA) + "\nRFW = " + str(RFA) + "\nER = " + str(ER))
 
