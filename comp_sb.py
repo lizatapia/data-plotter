@@ -12,8 +12,8 @@ from matplotlib.lines import Line2D
 
 # PLOT RESULTS SAVED WITH ACCUM_WL AND INVENTORY
 in_date = datetime.datetime(2020, 1, 21)
-sf_sb = shapefile.Reader('/var/dades/research/tapia/outputs/wl_sb_plot/wlcomb_'+ in_date.strftime("%Y%m%d") + '.shp') # HERE THE WL_COMB
-sf_inv = shapefile.Reader('/var/dades/research/tapia/outputs/landslide_event/inv_1day.shp') # HERE THE INVENTARY
+sf_sb = shapefile.Reader('YOUR PATH...wlcomb_'+ in_date.strftime("%Y%m%d") + '.shp') # HERE THE WL_COMB
+sf_inv = shapefile.Reader('YOUR PATH .../inv_1day.shp') # HERE THE INVENTARY
 
 fig = plt.figure(figsize = (10, 10))
 ax = fig.gca()
@@ -61,7 +61,7 @@ for inventory in sf_inv.shapeRecords():
     ax.plot(x, y, markersize=markersize_1, color=color_1, marker='o', mec = 'black')
 
 # IDENTIFY THE CRS USED
-src = rasterio.open("/var/dades/research/tapia/lews/warnings/20200121/wl202001210100.tif")
+src = rasterio.open("YOUR PATH.../acc01h_202001210100.tif")
 src_data = src.read(1)
 ctx.add_basemap(ax, crs = src.crs, source = ctx.providers.CartoDB.Positron, zoom = 8, alpha = 1)
 
