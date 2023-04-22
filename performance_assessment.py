@@ -7,86 +7,114 @@ import datetime
 import numpy as np
 from matplotlib.lines import Line2D
 
-# INITIATION
-frequency = "1D" # "1H"
-width = pd.Timedelta(days=1)
-date_in = datetime.datetime(2020, 1, 10, 0, 0)
+analysisFrequency = "1D" # "1H"
+barWidth = pd.Timedelta(days=1)
+date_start = datetime.datetime(2020, 1, 10, 0, 0)
 date_end = datetime.datetime(2020, 1, 27, 0, 0)
-number_days = date_end - date_in + pd.Timedelta(days=1)
-data_le = [0,6.5,55,2550,52500,200000,0,6.5,55,2550,52500,200000,0,6.5,55,2550,52500,200000] # the accumulation of LE values
-data_wl = [255,255,255,255,255,255,1,1,1,1,1,1,3,3,3,3,3,3] # the WL values
-threshold_wl = -3 # ABOVE MODERATE
-threshold_le = 1 # ABOVE M1
+totalDaysCount = date_end - date_start + pd.Timedelta(days=1)
+thresholdLandslideEvents = 1 # ABOVE M1
+thresholdWarningLevel = -3 # ABOVE MODERATE
 
-# MANIPULATING DATA
-ts = pd.date_range(date_in, date_end, freq=frequency)
-timeseries = pd.Series(index=ts)
-timeseries = pd.DataFrame(timeseries)
-# RE-SHAPING LANDSLIDE EVENTS (VOLUMEN)
-# individual value
-m1_ind = 6.5
-m2_ind = 55
-m3_ind = 2550
-m4_ind = 52500
-m5_ind = 100000
-# limits for each level
-m1_lim = 10
-m2_lim = 100
-m3_lim = 5000
-m4_lim = 100000
-# changing values
-timeline_le = [0] * len(data_le)
-for j in range(len(data_le)):
-    if data_le[j] == 0:
-        timeline_le[j] = 0 # NO EVENT
-    elif data_le[j] <= m1_lim:
-        timeline_le[j] = 1 # M1
-    elif data_le[j] > m1_lim and data_le[j] <= m2_lim:
-        timeline_le[j] = 2 # M2
-    elif data_le[j] > m2_lim and data_le[j] <= m3_lim:
-        timeline_le[j] = 3 # M3
-    elif data_le[j] > m3_lim and data_le[j] < m4_lim:
-        timeline_le[j] = 4 # M4
-    else:
-        timeline_le[j] = 5 # M5
-# RE-SHAPING WARNING LEVEL
-timeline_wl = [0] * len(data_wl)
-for i in range(len(data_wl)):
-    if data_wl[i] == 255:
-        timeline_wl[i] = 0 # NO WARNING
-    elif data_wl[i] == 0:
-        timeline_wl[i] = -1 # VERY LOW
-    elif data_wl[i] == 1:
-        timeline_wl[i] = -2 # LOW
-    elif data_wl[i] == 2:
-        timeline_wl[i] = -3 # MODERATE
-    else:
-        timeline_wl[i] = -4 # HIGH
-# GATHERING FINAL DATA
-timeseries["LE"] = timeline_le
-timeseries["WL"] = timeline_wl
+def initialize_data():
+    landslideEventsData = [0,6.5,55,2550,52500,200000,0,6.5,55,2550,52500,200000,0,6.5,55,2550,52500,200000] # the accumulation of LE values
+    warningLevelsData = [255,255,255,255,255,255,1,1,1,1,1,1,3,3,3,3,3,3] # the WL values
+    
+    return landslideEventsData, warningLevelsData
+
+def initialize_le(data):
+    # limits for each level
+    m1_lim = 10
+    m2_lim = 100
+    m3_lim = 5000
+    m4_lim = 100000
+
+    timeline_le = [0] * len(data)
+    for j in range(len(data)):
+        if data[j] == 0:
+            timeline_le[j] = 0 # NO EVENT
+        elif data[j] <= m1_lim:
+            timeline_le[j] = 1 # M1
+        elif data[j] <= m2_lim:
+            timeline_le[j] = 2 # M2
+        elif data[j] <= m3_lim:
+            timeline_le[j] = 3 # M3
+        elif data[j] < m4_lim:
+            timeline_le[j] = 4 # M4
+        else:
+            timeline_le[j] = 5 # M5
+
+    return timeline_le
+
+def initialize_wl(data):
+     # RE-SHAPING WARNING LEVEL
+    timeline_wl = [0] * len(data)
+    for i in range(len(data)):
+        if data[i] == 255:
+            timeline_wl[i] = 0 # NO WARNING
+        elif data[i] == 0:
+            timeline_wl[i] = -1 # VERY LOW
+        elif data[i] == 1:
+            timeline_wl[i] = -2 # LOW
+        elif data[i] == 2:
+            timeline_wl[i] = -3 # MODERATE
+        else:
+            timeline_wl[i] = -4 # HIGH
+
+    return timeline_wl
+
+def calculate_timeseries():
+    # MANIPULATING DATA
+    ts = pd.date_range(date_start, date_end, freq=analysisFrequency)
+    series = pd.Series(index=ts)
+    df = pd.DataFrame(series)
+    # RE-SHAPING LANDSLIDE EVENTS (VOLUMEN)
+    # individual value
+    # m1_ind = 6.5
+    # m2_ind = 55
+    # m3_ind = 2550
+    # m4_ind = 52500
+    # m5_ind = 100000
+    
+    # changing values
+
+    lEData, wLData = initialize_data()
+
+    timeline_le = initialize_le(lEData)
+    timeline_wl = initialize_wl(wLData)
+   
+    # GATHERING FINAL DATA
+    df["LE"] = timeline_le
+    df["WL"] = timeline_wl
+
+    return df
+
 
 #PLOTTING
+timeseries_df = calculate_timeseries()
+timeline_wl = timeseries_df["WL"]
+timeline_le = timeseries_df["LE"]
+
+
 name_time = 'ex3' # define name to save it
 fig, ax = plt.subplots(2, 1, figsize =(13, 13), tight_layout = True)
-fig.suptitle("Landslide Events and Landslide Warnings over time\n" + datetime.datetime.strftime(date_in,'%Y-%m-%d') + " until " + datetime.datetime.strftime(date_end,'%Y-%m-%d'), fontsize = 25)
+fig.suptitle("Landslide Events and Landslide Warnings over time\n" + datetime.datetime.strftime(date_start,'%Y-%m-%d') + " until " + datetime.datetime.strftime(date_end,'%Y-%m-%d'), fontsize = 25)
 
-ax[0].axes.bar(timeseries.index, timeseries["LE"], color = '#ffffff00', ec = 'blue', align = 'edge', linewidth = 2.5, width = width)
-ax[0].set_xticks(timeseries.index)
+ax[0].axes.bar(timeseries_df.index, timeseries_df["LE"], color = '#ffffff00', ec = 'blue', align = 'edge', linewidth = 2.5, width = barWidth)
+ax[0].set_xticks(timeseries_df.index)
 #ax[0].set_xlim(date_in, date_end)
 plt.setp(ax[0].get_xticklabels(), rotation = 90, fontsize = 14)
 name_date = ax[0].set_xlabel("Date", fontsize = 18) # still shows cut in the picture
 ax[0].xaxis.set_label_coords(1.01, -0.13)
 ax[0].set_yticks([0,1,2,3,4,5], labels =["No Event", "M1", "M2", "M3", "M4", "M5"], fontsize = 15)
 ax[0].set_ylabel("Landslide Events Classification", fontsize = 18)
-ax[0].axhline(y = threshold_le-0.05, linewidth = 0.9, linestyle = '-.', color = 'black')
+ax[0].axhline(y = thresholdLandslideEvents-0.05, linewidth = 0.9, linestyle = '-.', color = 'black')
 ax[0].spines[["top", "right"]].set_visible(False)
 
-ax[1].axes.bar(timeseries.index, timeseries["WL"], color = '#ffffff00', ec = 'red', align = 'edge', linewidth = 2.5, width = width)
+ax[1].axes.bar(timeseries_df.index, timeseries_df["WL"], color = '#ffffff00', ec = 'red', align = 'edge', linewidth = 2.5, width = barWidth)
 ax[1].xaxis.set_visible(False)
 ax[1].set_yticks([0,-1,-2,-3,-4], labels =["No Warning", "Very Low", "Low", "Moderate", "High"], fontsize = 15)
 ax[1].set_ylabel("Landslide Warning Levels", fontsize = 18)
-ax[1].axhline(y = threshold_wl+0.05, linewidth = 0.9, linestyle = '-.', color = 'black')
+ax[1].axhline(y = thresholdWarningLevel+0.05, linewidth = 0.9, linestyle = '-.', color = 'black')
 ax[1].spines[["right", "bottom"]].set_visible(False)
 
 plt.autoscale()
@@ -96,10 +124,10 @@ plt.show()
 # DURATION-MATRIX
 wl_num = 5
 le_num = 6
-limit_wl = (threshold_wl + 1) * (-1)
-limit_le = threshold_le - 1
+limit_wl = (thresholdWarningLevel + 1) * (-1)
+limit_le = thresholdLandslideEvents - 1
 dur_matrix = np.zeros((wl_num, le_num)) # matrix
-for k in range(len(data_wl)):
+for k in range(len(timeline_wl)):
     dur_matrix[timeline_wl[k]*(-1), timeline_le[k]] = dur_matrix[timeline_wl[k]*(-1), timeline_le[k]] + 1
 FP = 0
 TP = 0
@@ -146,7 +174,7 @@ r_value = r_value + dur_matrix[4,0] # additional value
 print("Grade of Correctness Criterion\nG = " + str(g_value) + "\nY = " + str(y_value) + "\nO = " + str(o_value) + "\nR = " + str(r_value))
 
 # CALCULATE PERFORMANCE INDICATORS
-I_eff = round((TN + TP) / (float(number_days.days) - dur_matrix[0,0]),3) # exclude when no-no situation
+I_eff = round((TN + TP) / (float(totalDaysCount.days) - dur_matrix[0,0]),3) # exclude when no-no situation
 HR_L = round(TP / (TP + FN), 3)
 PP_W = round(TP / (TP + FP), 3)
 TS = round(TP / (TP + FN + FP), 3)
@@ -154,28 +182,26 @@ OR = round((TP + TN) / (FN + FP), 3)
 MR = round(1 - I_eff, 3)
 RMA = round(1 - HR_L, 3)
 RFA = round(1 - PP_W, 3)
-ER = round((o_value + r_value) / (float(number_days.days) - dur_matrix[0,0]), 3) # exclude when no-no situation
+ER = round((o_value + r_value) / (float(totalDaysCount.days) - dur_matrix[0,0]), 3) # exclude when no-no situation
 print("Performance Indicators\nIeff = " + str(I_eff) + "\nHR_L = " + str(HR_L) + "\nPP_W = " + str(PP_W) + "\nTS = " + str(TS)
       + "\nOR = " + str(OR) + "\nMR = " + str(MR) +"\nRMW = " + str(RMA) + "\nRFW = " + str(RFA) + "\nER = " + str(ER))
 
 # STACKED BAR GRAPHS
 name_bar = 'ex2' # define name to save it
-cp_g = (TN+TP) / float(number_days.days) * 100 # correct predictions
+cp_g = (TN+TP) / float(totalDaysCount.days) * 100 # correct predictions
 #tp_g = TP / float(number_days.days) * 100
-fn_g = FN / float(number_days.days) * 100
-fp_g = FP / float(number_days.days) * 100
-r_g = r_value / float(number_days.days) * 100
-y_g = y_value / float(number_days.days) * 100
-o_g = o_value / float(number_days.days) * 100
-g_g = g_value / float(number_days.days) * 100
+fn_g = FN / float(totalDaysCount.days) * 100
+fp_g = FP / float(totalDaysCount.days) * 100
+r_g = r_value / float(totalDaysCount.days) * 100
+y_g = y_value / float(totalDaysCount.days) * 100
+o_g = o_value / float(totalDaysCount.days) * 100
+g_g = g_value / float(totalDaysCount.days) * 100
 
 fig, ax = plt.subplots(1, 2, figsize =(5, 6))
 fig.suptitle("Performance Assessment Results", fontsize = 18)
 
 ax[0].axes.bar(1, cp_g, color = '#C1C1C1', ec = 'black', width = 0.1)
 cp_l = Line2D([0], [0], color='#C1C1C1', marker='s', mec = 'black', markersize=6, lw=0)
-#ax[0].axes.bar(1, tn_g, bottom = tp_g, color = 'yellow', ec = 'black', width = 0.2)
-#tn_l = Line2D([0], [0], color='yellow', marker='s', mec = 'black', markersize=5, lw=0)
 ax[0].axes.bar(1, fp_g, bottom = cp_g, color = '#8E8E8E', ec = 'black', width = 0.1)
 fp_l = Line2D([0], [0], color='#8E8E8E', marker='s', mec = 'black', markersize=6, lw=0)
 ax[0].axes.bar(1, fn_g, bottom = cp_g+fp_g, color = '#5B5B5B', ec = 'black', width = 0.1)
